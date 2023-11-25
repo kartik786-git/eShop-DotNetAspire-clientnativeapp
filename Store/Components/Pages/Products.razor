@@ -1,0 +1,58 @@
+﻿@page "/products"
+@using DataEntities
+@using Store.Services
+@inject ProductService ProductService
+@inject IConfiguration Configuration
+@attribute [StreamRendering(true)]
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+<p>Here are some of our amazing outdoor products that you can purchase.</p>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (products.Count == 0) {
+    <p><em>There is a problem loading our products. Please try again later.</em></p>
+}
+else
+{
+    <div class="row">
+        @foreach (var product in products)
+        {
+
+            <div class="col-sm-4 p-2">
+                <div class="card">
+                    <div class="card-header text-center  bg-warning"><h4>@product.Name</h4></div>
+
+                    <div class="card-body">
+                        <div class="image-container">
+                            <img src="@imagePrefix/@product.ImageUrl" alt="Card Image" class="card-image" />
+                        </div>
+                    </div>
+                    <div class="card-footer text-center"><h4>Price :  @product.Price </h4></div>
+                </div>
+            </div>
+        }
+
+
+
+    </div>
+}
+
+@code {
+    private List<Product>? products;
+    private string imagePrefix = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+        imagePrefix = Configuration["ImagePrefix"];
+        products = await ProductService.GetProducts();
+    }
+
+}
